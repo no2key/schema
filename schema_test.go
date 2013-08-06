@@ -59,3 +59,25 @@ func TestBasicRecursive(t *testing.T) {
 		panic(err)
 	}
 }
+
+func TestTime(t *testing.T) {
+	data := []byte(`{
+		"Title": "About me",
+		"Published": "2013-08-05",
+		"Edited": "2013-08-05"
+	}`)
+
+	var v map[string]interface{}
+	err := json.Unmarshal(data, &v)
+
+	schema := map[string]interface{}{
+		"Title":     Validator{required: true, fun: Builtin.MaxLength, args: []interface{}{25}},
+		"Published": Validator{required: true, fun: Builtin.Time, args: []interface{}{"2006-01-02"}},
+		"Edited":    Validator{required: false, fun: Builtin.Time, args: []interface{}{"2006-01-02"}},
+	}
+
+	err = Validate(v, schema)
+	if err != nil {
+		panic(err)
+	}
+}
